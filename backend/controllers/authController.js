@@ -118,8 +118,17 @@ exports.updateDetails = async (req, res) => {
       address: req.body.address,
       city: req.body.city,
       state: req.body.state,
-      dob: req.body.dob
+      country: req.body.country,
+      gender: req.body.gender,
+      dob: req.body.dob,
+      admin: req.body.admin,
+      description: req.body.description
     };
+
+    // Manually update name for consistency (since findByIdAndUpdate skips pre-save hooks)
+    if (req.body.firstName || req.body.lastName) {
+      fieldsToUpdate.name = `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim();
+    }
 
     // Remove undefined fields
     Object.keys(fieldsToUpdate).forEach(

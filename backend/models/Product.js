@@ -23,14 +23,33 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a category']
   },
+  brand: {
+    type: String,
+    default: 'Essora'
+  },
+  sku: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  discountPrice: {
+    type: Number,
+    default: 0
+  },
+  onSale: {
+    type: Boolean,
+    default: false
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
   image_url: {
     type: String,
     default: 'https://via.placeholder.com/150'
-  },
-  created_at: {
-    type: Date,
-    default: Date.now
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Product', ProductSchema);

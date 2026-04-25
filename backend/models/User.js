@@ -3,8 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
   name: {
-    type: String,
-    required: [true, 'Please add a name']
+    type: String
   },
   email: {
     type: String,
@@ -33,23 +32,38 @@ const UserSchema = new mongoose.Schema({
   dob: Date,
   firstName: String,
   lastName: String,
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other', 'prefer not to say'],
+    default: 'prefer not to say'
+  },
+  country: {
+    type: String,
+    default: 'United Arab Emirates'
+  },
   admin: {
     type: Boolean,
     default: false
   },
+  description: String,
   created_at: {
     type: Date,
     default: Date.now
   }
 });
 
-// Encrypt password using bcrypt
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password_hash')) {
-    return next();
+// Pre-save hook: Sync name and encrypt password
+UserSchema.pre('save', async function() {
+  // 1. Combine firstName and lastName into name
+  if (this.firstName || this.lastName) {
+    this.name = `${this.firstName || ''} ${this.lastName || ''}`.trim();
   }
-  const salt = await bcrypt.genSalt(10);
-  this.password_hash = await bcrypt.hash(this.password_hash, salt);
+
+  // 2. Encrypt password if modified
+  if (this.isModified('password_hash')) {
+    const salt = await bcrypt.genSalt(10);
+    this.password_hash = await bcrypt.hash(this.password_hash, salt);
+  }
 });
 
 // Match user entered password to hashed password in database

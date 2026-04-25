@@ -8,6 +8,10 @@ const OrderSchema = new mongoose.Schema({
   },
   items: [
     {
+      product: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Product'
+      },
       name: String,
       price: Number,
       quantity: Number,
@@ -20,13 +24,22 @@ const OrderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'ready to ship', 'shipped', 'out for delivery', 'delivered'],
     default: 'pending'
   },
-  orderedAt: {
-    type: Date,
-    default: Date.now
-  }
+  deliveryCharges: {
+    type: Number,
+    default: 0
+  },
+  paymentScreenshot: String,
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid'],
+    default: 'pending'
+  },
+  description: String
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Order', OrderSchema);
