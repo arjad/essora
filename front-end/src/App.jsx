@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import WhatsAppWidget from './components/WhatsAppWidget';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Collection from './pages/Collection';
@@ -10,6 +11,7 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
+import OrderDetails from './pages/OrderDetails';
 import CartDrawer from './components/CartDrawer';
 
 function App() {
@@ -28,13 +30,16 @@ function App() {
           <Route path="/collection" element={<Collection />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/order/:orderId" element={<OrderDetails />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/:tab" element={<AdminDashboard />} />
         </Routes>
       </main>
       {!isAdminPage && <Footer />}
+      <WhatsAppWidget />
     </div>
   );
 }

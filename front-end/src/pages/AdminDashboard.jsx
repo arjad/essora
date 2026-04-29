@@ -217,7 +217,7 @@ export default function AdminDashboard() {
               <tr>
                 {activeTab === 'users' && ['User Identity', 'Location/Contact', 'Rights', 'Memo', 'Tools'].map(h => <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{h}</th>)}
                 {activeTab === 'products' && ['Product Details', 'Market SKU', 'In-Stock', 'Memo', 'Tools'].map(h => <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{h}</th>)}
-                {activeTab === 'orders' && ['Ref ID', 'End-User', 'Total', 'Notes', 'Tools'].map(h => <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{h}</th>)}
+                {activeTab === 'orders' && ['Ref ID', 'End-User', 'Financials', 'Payment', 'Tools'].map(h => <th key={h} className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{h}</th>)}
               </tr>
             </thead>
             <tbody>
@@ -265,8 +265,15 @@ export default function AdminDashboard() {
                     <tr key={o._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-all text-primary font-bold">
                       <td className="px-8 py-8 text-xs italic tracking-tighter opacity-50 uppercase"># {o._id.toString().slice(-8)}</td>
                       <td className="px-8 py-8"><span className="text-sm font-black block">{o.user?.firstName} {o.user?.lastName}</span><span className="text-[10px] opacity-40 font-black uppercase italic">{o.user?.email}</span></td>
-                      <td className="px-8 py-8"><span className="text-sm font-black text-green-600 italic tracking-tighter">Rs. {o.totalAmount}</span></td>
-                      <td className="px-8 py-8 text-[10px] text-gray-400 italic max-w-xs truncate">{o.description || '---'}</td>
+                      <td className="px-8 py-8">
+                        <span className="text-sm font-black text-green-600 italic tracking-tighter block">Rs. {o.totalAmount}</span>
+                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm border ${o.status === 'cancelled' ? 'bg-red-50 text-red-500 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{o.status}</span>
+                      </td>
+                      <td className="px-8 py-8">
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-sm border ${o.paymentStatus === 'paid' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                          {o.paymentStatus || 'Pending'}
+                        </span>
+                      </td>
                       <td className="px-8 py-8 flex gap-3 text-gray-300">
                         <button onClick={() => { setEditMode(true); setSelectedItem(o); setFormData(o); setOrderItems(o.items || []); setShowModal(true); }} className="hover:text-primary transition-all"><Pencil size={16} /></button>
                         <button disabled={processingId === o._id} onClick={() => handleDelete('order', o._id)} className="hover:text-red-500 transition-all">
@@ -389,10 +396,19 @@ export default function AdminDashboard() {
                       <div className="space-y-6">
                         <div><label className="text-[8px] font-black uppercase text-gray-300 px-1 mb-2 block tracking-tighter">Critical Phase 3. Context Description</label><textarea value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full bg-gray-50 border-none rounded-[1.5rem] px-6 py-4 text-xs font-black h-32 resize-none shadow-inner" placeholder="Inject contextual memoranda here..." /></div>
                         
-                        <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 grid grid-cols-2 gap-4">
-                           <div><label className="text-[8px] font-black uppercase text-gray-400 mb-1 block">Delivery (Rs.)</label><input type="number" value={formData.deliveryCharges || 0} onChange={(e) => setFormData({...formData, deliveryCharges: e.target.value})} className="w-full bg-white border-none rounded-xl px-4 py-3 text-xs font-black shadow-sm" /></div>
-                           <div><label className="text-[8px] font-black uppercase text-gray-400 mb-1 block">Logistics</label><select value={formData.status || 'pending'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full bg-white border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase shadow-sm"><option value="pending">Pending</option><option value="ready to ship">Ready</option><option value="shipped">Shipped</option><option value="out for delivery">Out</option><option value="delivered">Done</option></select></div>
-                        </div>
+                         <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div><label className="text-[8px] font-black uppercase text-gray-400 mb-1 block">Delivery (Rs.)</label><input type="number" value={formData.deliveryCharges || 0} onChange={(e) => setFormData({...formData, deliveryCharges: e.target.value})} className="w-full bg-white border-none rounded-xl px-4 py-3 text-xs font-black shadow-sm" /></div>
+                              <div><label className="text-[8px] font-black uppercase text-gray-400 mb-1 block">Logistics</label><select value={formData.status || 'pending'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full bg-white border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase shadow-sm"><option value="pending">Pending</option><option value="ready to ship">Ready</option><option value="shipped">Shipped</option><option value="out for delivery">Out</option><option value="delivered">Done</option><option value="cancelled">Cancelled</option></select></div>
+                            </div>
+                            <div>
+                              <label className="text-[8px] font-black uppercase text-gray-400 mb-1 block px-1">Payment Status</label>
+                              <div className="grid grid-cols-2 gap-2">
+                                <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'pending'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'pending' ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white text-amber-500 border-amber-100 hover:bg-amber-50'}`}>Pending</button>
+                                <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'paid'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'paid' ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-emerald-500 border-emerald-100 hover:bg-emerald-50'}`}>Paid</button>
+                              </div>
+                            </div>
+                         </div>
                       </div>
 
                       <div className="bg-primary text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group mt-4">

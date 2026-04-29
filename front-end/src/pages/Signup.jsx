@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +19,7 @@ export default function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, password }),
       });
 
       const data = await response.json();
@@ -49,16 +50,29 @@ export default function Signup() {
         )}
 
         <form onSubmit={handleSignup} className="space-y-6">
-          <div>
-            <label className="block text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-2">Full Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-100 px-4 py-4 rounded-xl text-primary focus:outline-none focus:border-primary transition-all"
-              placeholder="Jane Doe"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-2">First Name</label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-100 px-4 py-4 rounded-xl text-primary focus:outline-none focus:border-primary transition-all"
+                placeholder="Jane"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-2">Last Name</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-100 px-4 py-4 rounded-xl text-primary focus:outline-none focus:border-primary transition-all"
+                placeholder="Doe"
+                required
+              />
+            </div>
           </div>
           <div>
             <label className="block text-[11px] uppercase tracking-widest text-gray-400 font-bold mb-2">Email Address</label>

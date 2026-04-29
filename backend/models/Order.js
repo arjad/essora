@@ -24,18 +24,41 @@ const OrderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'ready to ship', 'shipped', 'out for delivery', 'delivered'],
+    enum: ['incomplete', 'pending', 'ready to ship', 'shipped', 'out for delivery', 'delivered', 'cancelled'],
     default: 'pending'
   },
   deliveryCharges: {
     type: Number,
     default: 0
   },
+  address: {
+    type: String,
+    required: function() { return this.status !== 'incomplete'; }
+  },
+  city: {
+    type: String,
+    required: function() { return this.status !== 'incomplete'; }
+  },
+  state: {
+    type: String,
+    required: function() { return this.status !== 'incomplete'; }
+  },
+  country: {
+    type: String,
+    required: function() { return this.status !== 'incomplete'; }
+  },
+  phone: {
+    type: String,
+    required: function() { return this.status !== 'incomplete'; }
+  },
   paymentScreenshot: String,
   paymentStatus: {
     type: String,
     enum: ['pending', 'paid'],
     default: 'pending'
+  },
+  estimatedDeliveryDate: {
+    type: Date
   },
   description: String
 }, {

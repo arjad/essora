@@ -5,13 +5,14 @@ const jwt = require('jsonwebtoken');
 // @route   POST /api/auth/register
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     console.log(`[Auth] Attempting to register user: ${email}`);
 
     // Create user
     const user = await User.create({
-      name,
+      firstName,
+      lastName,
       email,
       password_hash: password
     });
