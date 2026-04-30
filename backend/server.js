@@ -30,6 +30,9 @@ const orderRoutes = require('./routes/orderRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const productRoutes = require('./routes/productRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const path = require('path');
+
 
 // Mount routers
 app.use('/api/auth', authRoutes);
@@ -38,6 +41,11 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// Static folders
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 const PORT = process.env.PORT || 5001;
 

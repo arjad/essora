@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, CreditCard, Package, MessageCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, CreditCard, Package, MessageCircle, XCircle, Eye } from 'lucide-react';
 
 export default function OrderDetails() {
   const { orderId } = useParams();
@@ -184,6 +184,19 @@ Please let me know the next steps. Thank you!`;
                       {order.paymentStatus || 'Pending'}
                     </span>
                   </div>
+                  {order.paymentScreenshot && (
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-200/50 mb-2">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Payment Proof</span>
+                      <a 
+                        href={order.paymentScreenshot} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-200 underline-offset-4"
+                      >
+                        View Proof
+                      </a>
+                    </div>
+                  )}
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-400 font-bold uppercase">Subtotal</span>
                     <span className="text-blue-950 font-medium">Rs. {(order.totalAmount - (order.deliveryCharges || 0)).toLocaleString()}</span>
@@ -196,6 +209,27 @@ Please let me know the next steps. Thank you!`;
                     <span className="text-[10px] font-black uppercase tracking-widest text-blue-950">Grand Total</span>
                     <span className="text-xl font-serif font-black text-blue-950">Rs. {order.totalAmount.toLocaleString()}</span>
                   </div>
+                  {order.paymentScreenshot && (
+                    <div className="mt-8 pt-6 border-t border-slate-200">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4 italic">Payment Verification Proof</p>
+                      <div className="group relative w-full aspect-[3/4] max-w-[200px] bg-white border border-slate-200 rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all">
+                        <img 
+                          src={order.paymentScreenshot} 
+                          alt="Payment Proof" 
+                          className="w-full h-full object-contain bg-slate-100"
+                        />
+                        <a 
+                          href={order.paymentScreenshot} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute inset-0 bg-blue-950/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Eye size={20} className="text-white mb-2" />
+                          <span className="text-[10px] text-white font-bold uppercase tracking-widest px-3 py-1 border border-white/40 rounded-sm">View Full Screenshot</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

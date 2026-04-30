@@ -12,7 +12,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import OrderDetails from './pages/OrderDetails';
+import Checkout from './pages/Checkout';
 import CartDrawer from './components/CartDrawer';
+
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -34,6 +36,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/order/:orderId" element={<OrderDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/:tab" element={<AdminDashboard />} />
         </Routes>

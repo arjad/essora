@@ -270,9 +270,16 @@ export default function AdminDashboard() {
                         <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm border ${o.status === 'cancelled' ? 'bg-red-50 text-red-500 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>{o.status}</span>
                       </td>
                       <td className="px-8 py-8">
-                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-sm border ${o.paymentStatus === 'paid' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
-                          {o.paymentStatus || 'Pending'}
-                        </span>
+                        <div className="flex flex-col gap-2">
+                          <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-sm border ${o.paymentStatus === 'paid' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                            {o.paymentStatus || 'Pending'}
+                          </span>
+                          {o.paymentScreenshot && (
+                            <a href={o.paymentScreenshot} target="_blank" rel="noreferrer" className="text-[8px] text-blue-500 hover:underline flex items-center gap-1 font-black uppercase tracking-widest">
+                              <FileText size={10} /> View Proof
+                            </a>
+                          )}
+                        </div>
                       </td>
                       <td className="px-8 py-8 flex gap-3 text-gray-300">
                         <button onClick={() => { setEditMode(true); setSelectedItem(o); setFormData(o); setOrderItems(o.items || []); setShowModal(true); }} className="hover:text-primary transition-all"><Pencil size={16} /></button>
@@ -402,24 +409,34 @@ export default function AdminDashboard() {
                               <div><label className="text-[8px] font-black uppercase text-gray-400 mb-1 block">Logistics</label><select value={formData.status || 'pending'} onChange={(e) => setFormData({...formData, status: e.target.value})} className="w-full bg-white border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase shadow-sm"><option value="pending">Pending</option><option value="ready to ship">Ready</option><option value="shipped">Shipped</option><option value="out for delivery">Out</option><option value="delivered">Done</option><option value="cancelled">Cancelled</option></select></div>
                             </div>
                             <div>
-                              <label className="text-[8px] font-black uppercase text-gray-400 mb-1 block px-1">Payment Status</label>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'pending'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'pending' ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white text-amber-500 border-amber-100 hover:bg-amber-50'}`}>Pending</button>
-                                <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'paid'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'paid' ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-emerald-500 border-emerald-100 hover:bg-emerald-50'}`}>Paid</button>
-                              </div>
-                            </div>
-                         </div>
+                             <div>
+                               <label className="text-[8px] font-black uppercase text-gray-400 mb-1 block px-1">Payment Status</label>
+                               <div className="grid grid-cols-2 gap-2">
+                                 <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'pending'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'pending' ? 'bg-amber-500 text-white border-amber-500 shadow-md' : 'bg-white text-amber-500 border-amber-100 hover:bg-amber-50'}`}>Pending</button>
+                                 <button type="button" onClick={() => setFormData({...formData, paymentStatus: 'paid'})} className={`py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.paymentStatus === 'paid' ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-emerald-500 border-emerald-100 hover:bg-emerald-50'}`}>Paid</button>
+                               </div>
+                             </div>
+                             {formData.paymentScreenshot && (
+                               <div className="pt-2">
+                                 <label className="text-[8px] font-black uppercase text-gray-400 mb-2 block px-1">Verification Proof</label>
+                                 <a href={formData.paymentScreenshot} target="_blank" rel="noreferrer" className="block w-full h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 hover:border-primary transition-all">
+                                   <img src={formData.paymentScreenshot} className="w-full h-full object-contain" alt="Proof" />
+                                 </a>
+                               </div>
+                             )}
+                           </div>
+                        </div>
                       </div>
 
-                      <div className="bg-primary text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group mt-4">
+                       <div className="bg-primary text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group mt-4">
                         <p className="text-[8px] font-black uppercase opacity-40 mb-1 tracking-widest">Aggregated Grand Total</p>
                         <p className="text-3xl font-black italic tracking-tighter drop-shadow-lg leading-none">
                           Rs. { ( orderItems.reduce((acc, item) => acc + (Number(item.price) * Number(item.quantity)), 0) + Number(formData.deliveryCharges || 0) ) }
                         </p>
-                      </div>
-                   </div>
-                 </>
-               )}
+                       </div>
+                    </div>
+                  </>
+                )}
 
                <div className="col-span-12">
                   <button disabled={creating} className="w-full bg-primary text-white py-6 rounded-3xl font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:scale-105 transition-all disabled:opacity-50 mt-4 flex items-center justify-center gap-3">
