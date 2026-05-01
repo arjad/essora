@@ -46,6 +46,15 @@ app.use('/api/upload', uploadRoutes);
 // Static folders
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Health check
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+  });
+});
 
 const PORT = process.env.PORT || 5001;
 
