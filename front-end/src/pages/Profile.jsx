@@ -40,7 +40,7 @@ export default function Profile() {
     const token = localStorage.getItem('token');
     if (!token) { window.location.href = '/login'; return; }
     try {
-      const res = await fetch('http://localhost:5001/api/auth/me', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -66,7 +66,7 @@ export default function Profile() {
 
   const fetchOrders = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/user/${userId}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/user/${userId}`);
       const data = await res.json();
       if (data.success) setOrders(data.data);
     } catch { /* noop */ }
@@ -81,7 +81,7 @@ export default function Profile() {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch('http://localhost:5001/api/auth/updatedetails', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/updatedetails`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(formData)

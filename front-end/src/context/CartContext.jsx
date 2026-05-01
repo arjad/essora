@@ -30,13 +30,13 @@ export function CartProvider({ children }) {
       if (!token || cartItems.length === 0) return;
 
       try {
-        const meRes = await fetch('http://localhost:5001/api/auth/me', {
+        const meRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const meData = await meRes.json();
         
         if (meData.success) {
-          await fetch('http://localhost:5001/api/orders/sync-incomplete', {
+          await fetch(`${import.meta.env.VITE_API_URL}/api/orders/sync-incomplete`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

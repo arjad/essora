@@ -16,7 +16,7 @@ export default function OrderDetails() {
   const fetchOrderDetails = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:5001/api/orders/${orderId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -37,7 +37,7 @@ export default function OrderDetails() {
     
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:5001/api/orders/${orderId}/cancel`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/cancel`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
