@@ -65,7 +65,7 @@ export default function Checkout() {
     // Fetch user details if they exist
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/auth/me', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -107,7 +107,7 @@ export default function Checkout() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/upload', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
         method: 'POST',
         body: formData
       });
@@ -136,7 +136,7 @@ export default function Checkout() {
     
     try {
       // 1. Update user details first (optional but good for persistence)
-      await fetch('http://localhost:5001/api/auth/updatedetails', {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/updatedetails`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ export default function Checkout() {
         paymentScreenshot: screenshotUrl
       };
 
-      const response = await fetch('http://localhost:5001/api/orders', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
