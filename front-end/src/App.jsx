@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppWidget from './components/WhatsAppWidget';
+import ChatBotWidget from './components/ChatBotWidget';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Collection from './pages/Collection';
@@ -14,6 +15,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import OrderDetails from './pages/OrderDetails';
 import Checkout from './pages/Checkout';
 import CartDrawer from './components/CartDrawer';
+import ProductDetails from './pages/ProductDetails';
+import TermsOfService from './pages/TermsOfService';
+import TermsOfUse from './pages/TermsOfUse';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 
 function App() {
@@ -41,10 +46,16 @@ function App() {
 
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/:tab" element={<AdminDashboard />} />
+
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
         </Routes>
       </main>
       {!isAdminPage && <Footer />}
       <WhatsAppWidget />
+      <ChatBotWidget />
     </div>
   );
 }

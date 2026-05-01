@@ -10,7 +10,7 @@ export default function WhatsAppWidget() {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-8 right-8 z-50 group flex items-center gap-3"
+      className="fixed bottom-5 right-22 z-50 group flex items-center gap-3"
       aria-label="Chat on WhatsApp"
     >
       {/* Label - visible on hover */}
@@ -24,7 +24,7 @@ export default function WhatsAppWidget() {
         <span className="absolute inset-0 rounded-full animate-ping bg-[#25D366] opacity-75"></span>
 
         <svg
-          className="w-7 h-7 relative z-10"
+          className="w-6 h-6 relative z-10"
           fill="currentColor"
           viewBox="0 0 24 24"
         >

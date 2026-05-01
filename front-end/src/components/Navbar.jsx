@@ -26,6 +26,20 @@ export default function Navbar({ onCartClick }) {
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  const [isBouncing, setIsBouncing] = useState(false);
+  const [prevCount, setPrevCount] = useState(0);
+
+  useEffect(() => {
+    if (cartCount > prevCount) {
+      setIsBouncing(true);
+      const timer = setTimeout(() => setIsBouncing(false), 300);
+      setPrevCount(cartCount);
+      return () => clearTimeout(timer);
+    } else if (cartCount !== prevCount) {
+      setPrevCount(cartCount);
+    }
+  }, [cartCount, prevCount]);
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
@@ -74,15 +88,9 @@ export default function Navbar({ onCartClick }) {
                   <User size={16} strokeWidth={2.5} />
                   <span className="hidden sm:inline">Account</span>
                 </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-400 hover:text-red-500 transition-colors cursor-pointer"
-                >
-                  <LogOut size={16} strokeWidth={2.5} />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
               </>
             ) : (
+
               <>
                 <Link to="/login" className="text-[10px] font-bold uppercase tracking-widest text-blue-950 hover:text-slate-600 transition-colors">Login</Link>
                 <Link to="/signup" className="bg-blue-950 text-white px-8 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-blue-900 transition-all shadow-lg hover:shadow-blue-950/20">Sign Up</Link>
@@ -94,8 +102,8 @@ export default function Navbar({ onCartClick }) {
             onClick={onCartClick}
             className="group flex items-center gap-2 md:gap-3 text-[10px] font-bold uppercase tracking-widest text-blue-950 hover:text-slate-600 md:ml-4 md:border-l border-slate-100 md:pl-8 transition-all"
           >
-            <div className="relative">
-              <ShoppingCart size={20} md:size={18} strokeWidth={2.5} />
+            <div className={`relative transition-transform duration-300 ease-out ${isBouncing ? 'scale-125 -translate-y-1' : 'scale-100'}`}>
+              <ShoppingCart size={20} strokeWidth={2.5} />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-blue-950 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
                   {cartCount}
@@ -127,16 +135,10 @@ export default function Navbar({ onCartClick }) {
           <div className="pt-8 border-t border-slate-50 space-y-6">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Member Space</p>
             {isLoggedIn ? (
-              <div className="grid grid-cols-2 gap-4">
-                <Link to="/profile" className="flex flex-col items-center justify-center gap-3 p-6 bg-slate-50 rounded-sm group hover:bg-blue-950 transition-all">
-                  <User size={20} className="text-blue-950 group-hover:text-white" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-white">Profile</span>
-                </Link>
-                <button onClick={handleLogout} className="flex flex-col items-center justify-center gap-3 p-6 bg-red-50 rounded-sm group hover:bg-red-500 transition-all">
-                  <LogOut size={20} className="text-red-500 group-hover:text-white" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-red-400 group-hover:text-white">Logout</span>
-                </button>
-              </div>
+              <Link to="/profile" className="flex flex-col items-center justify-center gap-3 p-6 bg-slate-50 rounded-sm group hover:bg-blue-950 transition-all">
+                <User size={20} className="text-blue-950 group-hover:text-white" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-white">Profile</span>
+              </Link>
             ) : (
               <div className="space-y-4">
                 <Link to="/login" className="block w-full text-center py-4 text-[10px] font-bold uppercase tracking-widest text-blue-950 border border-blue-950 rounded-sm hover:bg-blue-950 hover:text-white transition-all">

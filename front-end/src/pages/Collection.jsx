@@ -1,89 +1,201 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { motion } from 'framer-motion';
+import { Star, ShoppingCart, Check } from 'lucide-react';
+import PageHeading from '../components/PageHeading';
+
+const PerfumeCard = ({
+  id,
+  name,
+  description,
+  price,
+  oldPrice,
+  rating,
+  image,
+  badgeText,
+  badgeBg,
+  delay = 0,
+  onAddToCart
+}) => {
+  const [added, setAdded] = useState(false);
+  const slug = name.toLowerCase().replace(/\s+/g, '-');
+
+  const handleAddToCart = () => {
+    onAddToCart();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+      whileHover={{ y: -5 }}
+      className="group flex flex-col bg-white rounded-[3.5rem] shadow-sm border border-neutral-100 relative h-full overflow-hidden"
+    >
+      {/* Image Area with Sale Badge - Full Bleed */}
+      <div className="relative aspect-square flex items-center justify-center bg-neutral-50/30">
+        <div className={`absolute top-6 right-6 z-10 ${badgeBg} text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 shadow-md rounded-full`}>
+          {badgeText}
+        </div>
+        <Link to={`/product/${slug}`} className="absolute inset-0 flex items-center justify-center z-10">
+          <motion.img 
+            whileHover={{ scale: 1.3 }}
+            initial={{ scale: 1.15 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            src={image} 
+            alt={name} 
+            className="w-[130%] h-[130%] max-w-none object-contain relative drop-shadow-[0_20px_20px_rgba(0,0,0,0.35)]"
+            referrerPolicy="no-referrer"
+          />
+        </Link>
+        <div className="absolute inset-0 bg-neutral-100/50 rounded-full scale-90 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+      </div>
+
+      {/* Padded Content */}
+      <div className="p-8 pt-6 pb-12 flex flex-col flex-1">
+        {/* Name & Description */}
+        <div className="mb-2">
+          <Link to={`/product/${slug}`}>
+            <h3 className="text-xl font-serif tracking-wide hover:text-blue-900 transition-colors">{name}</h3>
+          </Link>
+          <p className="text-[9px] uppercase tracking-widest text-slate-400 font-bold mt-1 leading-tight">
+            {description}
+          </p>
+        </div>
+
+        {/* Rating */}
+        <div className="flex gap-0.5 mb-6 opacity-60">
+          {[...Array(5)].map((_, i) => (
+            <Star 
+              key={i} 
+              size={10} 
+              fill={i < Math.floor(rating) ? "currentColor" : "none"} 
+              className="text-amber-500" 
+            />
+          ))}
+        </div>
+
+        {/* Bottom: Price and Cart Icon */}
+        <div className="mt-auto flex items-center justify-between border-t border-neutral-50 pt-4 gap-2">
+          <div className="flex flex-col min-w-0">
+            {oldPrice && <span className="text-[10px] text-slate-400 line-through opacity-40 font-bold mb-0.5 truncate">{oldPrice}</span>}
+            <span className="text-xl font-serif text-blue-950 truncate">{price}</span>
+          </div>
+          <button 
+            onClick={handleAddToCart}
+            className={`w-10 h-10 ${added ? 'bg-green-600 hover:bg-green-500 shadow-green-600/20' : 'bg-blue-950 hover:bg-blue-900 shadow-blue-900/20'} text-white rounded-full flex items-center justify-center transition-all shadow-lg shrink-0 group/btn`}
+          >
+            {added ? (
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                <Check size={18} strokeWidth={3} />
+              </motion.div>
+            ) : (
+              <ShoppingCart size={18} className="group-hover/btn:scale-110 transition-transform" />
+            )}
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function Collection() {
   const { addToCart } = useCart();
-  const perfumes = [
-    {
-      id: '69f1851ab96541709f8bf904',
-      name: 'Supreme Oud',
-      price: 'Rs. 18,500',
-      notes: 'Cambodian Oud, Saffron, Leather',
-      image: '/Users/mac/.gemini/antigravity/brain/37ad85f3-e551-40ba-890b-eaf5bb8cd6d0/supreme_oud_bottle_1777432196280.png'
-    },
-    {
-      id: '69f1851ab96541709f8bf905',
-      name: 'Dark Mode',
-      price: 'Rs. 15,000',
-      notes: 'Black Coffee, Incense, Bergamot',
-      image: '/Users/mac/.gemini/antigravity/brain/37ad85f3-e551-40ba-890b-eaf5bb8cd6d0/dark_mode_bottle_1777432229934.png'
-    },
-    {
-      id: '69f1851ab96541709f8bf906',
-      name: 'Royal Routine',
-      price: 'Rs. 16,500',
-      notes: 'White Florals, Ambergris, Musk',
-      image: '/Users/mac/.gemini/antigravity/brain/37ad85f3-e551-40ba-890b-eaf5bb8cd6d0/royal_routine_bottle_1777432310161.png'
-    },
-  ];
+  const [perfumes, setPerfumes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <div className="bg-slate-50 min-h-screen py-24">
-      <style>{`
-        .perspective-1000 {
-          perspective: 1000px;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5001/api/products');
+        if (response.ok) {
+          const responseData = await response.json();
+          const productsArray = responseData.data || [];
+          // Transform db data to UI format
+          const formattedData = productsArray.map(p => ({
+            id: p._id,
+            name: p.name,
+            price: `Rs. ${p.price.toLocaleString()}`,
+            rawPrice: p.price,
+            oldPrice: p.discountPrice && p.discountPrice > 0 ? `Rs. ${p.discountPrice.toLocaleString()}` : '',
+            rating: 5,
+            badgeText: p.isFeatured ? 'Featured' : (p.onSale ? 'Sale' : 'Collection'),
+            badgeBg: p.isFeatured ? 'bg-amber-600' : (p.onSale ? 'bg-emerald-600' : 'bg-blue-950'),
+            notes: p.description,
+            // Fallback to local nice images if it matches previous hardcoded items
+            image: (p.name.toLowerCase().includes('supreme oud')) ? '/perfumes/supreme_oud.png' 
+                 : (p.name.toLowerCase().includes('dark mode')) ? '/perfumes/dark_mode.png'
+                 : (p.name.toLowerCase().includes('royal routine')) ? '/perfumes/royal_routine.png'
+                 : (p.image_url || '/perfumes/supreme_oud.png'),
+          }));
+          setPerfumes(formattedData);
         }
-        .preserve-3d {
-          transform-style: preserve-3d;
-        }
-        .group:hover .card-3d {
-          transform: rotateY(15deg) rotateX(10deg);
-        }
-      `}</style>
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
-          <h1 className="text-5xl font-serif text-blue-950 tracking-[0.3em] mb-6 uppercase">The Collection</h1>
-          <p className="text-slate-500 font-light max-w-2xl mx-auto text-lg">A curated selection of our finest olfactory masterpieces. Pure luxury, bottled for the discerning individual.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 px-4">
-          {perfumes.map((perfume) => (
-            <div key={perfume.id} className="group perspective-1000 cursor-pointer">
-              <div className="relative aspect-[4/5] bg-white shadow-2xl rounded-sm overflow-hidden transition-all duration-700 ease-out preserve-3d card-3d border border-slate-100">
-                {/* Product Image */}
-                <img
-                  src={perfume.image}
-                  alt={perfume.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-
-                {/* Overlay with details on hover */}
-                <div className="absolute inset-0 bg-blue-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <div className="transform translate-z-10 bg-white/90 backdrop-blur-sm px-8 py-3 rounded-sm opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 shadow-xl">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-blue-950">View Details</span>
+  if (loading) {
+    return (
+      <div className="bg-slate-50 min-h-screen pt-8 pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PageHeading title="The Collection" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-4 md:px-8">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-[3.5rem] shadow-sm border border-neutral-100 h-full overflow-hidden animate-pulse">
+                <div className="aspect-square bg-slate-100/80"></div>
+                <div className="p-8 pt-6 pb-12 flex flex-col flex-1 space-y-4">
+                  <div className="h-5 bg-slate-100 rounded-full w-3/4"></div>
+                  <div className="h-3 bg-slate-100 rounded-full w-1/2"></div>
+                  <div className="flex gap-0.5 mt-2">
+                    {[...Array(5)].map((_, j) => (
+                      <div key={j} className="w-3 h-3 rounded-full bg-slate-100"></div>
+                    ))}
+                  </div>
+                  <div className="mt-auto pt-4 border-t border-neutral-50 flex items-center justify-between">
+                    <div className="h-6 bg-slate-100 rounded-full w-24"></div>
+                    <div className="w-10 h-10 rounded-full bg-slate-100"></div>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-              {/* Card Footer */}
-              <div className="mt-10 text-center space-y-3">
-                <h3 className="text-2xl text-blue-950 font-serif tracking-widest">{perfume.name}</h3>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold">{perfume.notes}</p>
-                <div className="pt-2">
-                  <span className="text-xl font-light text-blue-950 tracking-tighter">{perfume.price}</span>
-                </div>
+  return (
+    <div className="bg-slate-50 min-h-screen pt-8 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PageHeading
+          title="The Collection"
+        />
 
-                <div className="pt-6">
-                  <button
-                    onClick={() => addToCart(perfume)}
-                    className="w-full py-3 bg-blue-950 text-white text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-blue-900 transition-all shadow-lg hover:shadow-blue-950/20 active:scale-95 transform"
-                  >
-                    Add to Collection
-                  </button>
-                </div>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-4 md:px-8">
+          {perfumes.map((perfume, index) => (
+            <PerfumeCard
+              key={perfume.id}
+              id={perfume.id}
+              name={perfume.name}
+              description={perfume.notes}
+              price={perfume.price}
+              oldPrice={perfume.oldPrice}
+              rating={perfume.rating}
+              image={perfume.image}
+              badgeText={perfume.badgeText}
+              badgeBg={perfume.badgeBg}
+              delay={index * 0.1}
+              onAddToCart={() => addToCart(perfume)}
+            />
           ))}
         </div>
       </div>
